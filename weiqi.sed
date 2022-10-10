@@ -1,4 +1,4 @@
-#!/usr/bin/sed -nrf
+#!/usr/bin/sed -nurf
 #Writen by Colin Cai(Colin_Cai_Jin@163.com)
 
 #input 'start' to start a new game
@@ -427,7 +427,9 @@ s/^[^a-z\n]*([a-z]*) */\1 /
 x
 :score_lineA
 s/.*/Please input "end" to score and end the game, or input two numbers for the coordinate of the stone to clear/p
+:score_cmd
 n
+/^[ \t]*#/b score_cmd
 /end/ {
 	s/.*/END!!/p
 	b score_last
@@ -573,23 +575,16 @@ b line_write_manual
 
 :line_write_manual
 s/.*/Please input the file name of the chess manual to save. Input nothing if do not want to save./p
+:input_manual_name
 n
+/^[ \t]*#/b input_manual_name
 s/[ \t]//g
 /^$/q
 x
 s/^[^a-z\n]*([a-z]*).*/\1/
 s/([a-z])([a-z])/\1 \2/g
 s/([a-z])([a-z])/\1 \2/g
-s/a/0/g
-s/b/1/g
-s/c/2/g
-s/d/3/g
-s/e/4/g
-s/f/5/g
-s/g/6/g
-s/h/7/g
-s/i/8/g
-s/j/9/g
+y/abcdefghij/0123456789/
 s/k/10/g
 s/l/11/g
 s/m/12/g
@@ -605,6 +600,7 @@ G
 s/^([^\n]*[0-9]) ([0-9]+ [0-9]+)\n((.*\n)?)([^\n]+)$/\1\necho \2 >>\5\n\3\5/
 t line50
 /^([0-9 ]+)(\n((.*\n)?))([^\n]+)/s//echo \1 >>\5\2\5/
-s/(^|.*)\n([^\n]+)$/>\2\n\1/
+s/(^|.*\n)([^\n]+)$/>\2\n\1cat <<EOF\n\2 saved\nEOF/
 e
+p
 q
