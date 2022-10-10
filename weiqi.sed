@@ -1,4 +1,9 @@
 #!/usr/bin/sed -nrf
+#Writen by Colin Cai(Colin_Cai_Jin@163.com)
+
+#input 'start' to start a new game
+#input two numbers fot the coordinate to pit a stone
+#input 'score' to decide win/lose
 
 #                         1 1 1 1 1 1 1 1 1
 #     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8
@@ -28,7 +33,8 @@
 #headline:
 #  first number : 1:black  2:white
 #  second number and first number (if exist): the coodinate killed when kofights
-#2 1111 1111111
+#  last : chess manual
+#2 1111 1111111 ddcpqd
 #0000000000000000000
 #0000000000000000000
 #0000000000000000000
@@ -50,9 +56,10 @@
 #0000000000000000000
 
 :start
+/^[ \t]*#/d
 #Initialize
 /.*start.*/ {
-	s/.*/1\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000/
+	s/.*/1 \n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000\n0000000000000000000/
 	h
 	b print
 }
@@ -62,17 +69,39 @@
 	b score
 }
 
+#convert other charactors to space
+s/[^0-9]+/ /g
 /^[ \t]*([0-9]+)[ \t]+([0-9]+)[ \t]*$/! {
 	s/.*/Please input "start" to start the game, or input two numbers for the coordinate of the stone/p
 	d
 }
 
 #Try to put a stone on the board
-s//\1 \2/
+#Convert the coordinate from number to alphabet
+s//X\1X\2\n\1 \2/
+s/X18/s/g
+s/X17/r/g
+s/X16/q/g
+s/X15/p/g
+s/X14/o/g
+s/X13/n/g
+s/X12/m/g
+s/X11/l/g
+s/X10/k/g
+s/X9/j/g
+s/X8/i/g
+s/X7/h/g
+s/X6/g/g
+s/X5/f/g
+s/X4/e/g
+s/X3/d/g
+s/X2/c/g
+s/X1/b/g
+s/X0/a/g
 :line1
 s/([0-9])([0-9])/\1;\2/
 t line1
-s/([0-9])([ \t]|$)/\11\2/g
+s/([0-9])( |$)/\11\2/g
 s/0//g
 s/9/45/g
 s/8/44/g
@@ -88,6 +117,8 @@ t line2
 s/;//g
 
 G
+#Append the chess manual
+s/^([^\n]+)\n([^\n]+\n)([^\n]+)/\2\3\1/
 
 #Judge whether there is a stone on the coordinate
 s/^(1+) (1+\n[^\n]*\n)/x\1 y\2A/
@@ -106,7 +137,7 @@ t line4
 s/^([^x]*)x([^y]*)y([^\n]*\n[^\n]*)\n/\1\2\3 \n/
 s/A0/P/
 #Black
-/^[^\n]*\n[ \t]*1/ {
+/^[^\n]*\n1/ {
 	b line_black
 }
 
@@ -280,53 +311,53 @@ b judge_dead_stons
 :judge_dead_stons
 /^([^A\n]*)A/ {
 	s//\1/
-	/^[^\n]*\n[ \t]*1/y/A/2/
-	/^[^\n]*\n[ \t]*2/y/A/1/
+	/^[^\n]*\n1/y/A/2/
+	/^[^\n]*\n2/y/A/1/
 }
 /^([^B\n]*)B/ {
 	s//\1/
-	/^[^\n]*\n[ \t]*1/y/B/2/
-	/^[^\n]*\n[ \t]*2/y/B/1/
+	/^[^\n]*\n1/y/B/2/
+	/^[^\n]*\n2/y/B/1/
 }
 /^([^C\n]*)C/ {
 	s//\1/
-	/^[^\n]*\n[ \t]*1/y/C/2/
-	/^[^\n]*\n[ \t]*2/y/C/1/
+	/^[^\n]*\n1/y/C/2/
+	/^[^\n]*\n2/y/C/1/
 }
 /^([^D\n]*)D/ {
 	s//\1/
-	/^[^\n]*\n[ \t]*1/y/D/2/
-	/^[^\n]*\n[ \t]*2/y/D/1/
+	/^[^\n]*\n1/y/D/2/
+	/^[^\n]*\n2/y/D/1/
 }
 
 #Kofights
-/^[ \t]*(1+)[ \t]+(1+)[ \t]*\n[ \t]*[12][ \t]+\1[ \t]+\2[ \t]*\n[^ABCD]*[ABCD][^ABCD]*$/ {
+/^ *(1+) +(1+) *\n[12] +\1 +\2[a-z ]*\n[^ABCD]*[ABCD][^ABCD]*$/ {
 	s/.*/Kofights! Please re-input/p
 	d
 }
 
-#self:has no qi  &&    other:no stone has no qi
+#self:has no qi  &&    opponent:no stone has no qi
 /^[^H\n]*\n[^A-D]*$/ {
 	s/.*/Can not put a stone here! Please re-input/p
 	d
 }
-#self:has qi   ||  other:at least 2 stones has no qi
+#self:has qi   ||  opponent:at least 2 stones has no qi
 /H|^[^A-D]*[A-D][^A-D]*[A-D]/ {
 	s/^[^\nH]*H//
-	/^[^\n]*\n1[^\n]*\n/ {
-		s//2\n/
+	/^[^\n]*\n1[^a-z\n]*([a-z]*) *\n/ {
+		s//2 \1\n/
 		y/PHABCD/110000/
 		h
 		t print
 	}
-	s/^[^\n]*\n2[^\n]*\n/1\n/
+	s/^[^\n]*\n2[^a-z\n]*([a-z]*) *\n/1 \1\n/
 	y/PHABCD/220000/
 	h
 	t print
 }
 
-#self: has no qi  && other: only 1 stone has no qi
-s/^[^\n]*\n(.)[^\n]*\n/\1\n/
+#self: has no qi  && opponent: only 1 stone has no qi
+s/^[^\n]*\n(.)[^a-z\n]*([a-z]*) *\n/\1 \2\n/
 /^1/ {
 	y/PH/11/
 }
@@ -335,12 +366,12 @@ s/^[^\n]*\n(.)[^\n]*\n/\1\n/
 }
 s/[A-D]/A0/
 /^1/s//2 1 1/
-/^2\n/s//1 1 1\n/
+/^2 ([^1])/s//1 1 1 \1/
 :line14
-s/^(. )(1+ 1+\n[^A]*)([0-9])A/\11\2A\3/
+s/^(. )(1+ [^\n]+\n[^A]*)([0-9])A/\11\2A\3/
 t line14
 :line15
-s/^(. 1+ 1+)((\n[0-9]+)*)\n([0-9]+\n)A/\11\2\nA\4/
+s/^(. 1+ 1+)(([^\n]*\n[0-9]+)*)\n([0-9]+\n)A/\11\2\nA\4/
 t line15
 s/A//
 h
@@ -391,23 +422,25 @@ g
 /[0-9]/!q
 #hold space: line 1 => S
 x
-s/^[^\n]*\n/S\n/
+#s/^[^\n]*\n/S\n/
+s/^[^a-z\n]*([a-z]*) */\1 /
 x
 :score_lineA
 s/.*/Please input "end" to score and end the game, or input two numbers for the coordinate of the stone to clear/p
 n
-p
 /end/ {
 	s/.*/END!!/p
 	b score_last
 }
 
-/^[ \t]*([0-9]+)[ \t]+([0-9]+)[ \t]*$/!b score_lineA
+#convert other charactors to space
+s/[^0-9]+/ /g
+/^ *([0-9]+) +([0-9]+) *$/!b score_lineA
 s//\1 \2/
 :line31
 s/([0-9])([0-9])/\1;\2/
 t line31
-s/([0-9])([ \t]|$)/\11\2/g
+s/([0-9])( |$)/\11\2/g
 s/0//g
 s/9/45/g
 s/8/44/g
@@ -434,7 +467,7 @@ t line34
 /A0/ {
 	b score_lineA
 }
-s/^[^\n]*\n/S\n/
+s/^[^\n]*\n//
 /A1/ {
 	s//P/
 	:line35
@@ -458,12 +491,13 @@ s/^[^\n]*\n/S\n/
 :line37
 y/P/0/
 h
+s/^/S\n/
 b print
 
 
 :score_last
 g
-
+s/^[^\n]*/S/
 #Check the ascription of each blank 
 :line38
 /0/ {
@@ -496,8 +530,8 @@ s/12//g
 s/21//g
 t line40
 /^$/ {
-	s/.*/Black and White have the same count/p
-	q
+	s/.*/Black and White have the same count\nWhite wins/p
+	b line_write_manual
 }
 
 /1/ {
@@ -507,7 +541,7 @@ t line40
 	s/.*/White black &/
 	y/2/1/
 }
-h
+H
 :line41
 s/ 1{10}/ 1;/
 s/;1{10}/1;/g
@@ -529,11 +563,48 @@ s/^([^ ]+) ([^ ]+) ([^ ]+)$/\1 has \3 stones more than \2/p
 g
 #3+3/4 => 1{8}
 #You can change 1{8} to 1{n} for an arbitrary 'n' if the compensation points change.
-/Black.*white.*1{8}/ {
+/Black.*white.*1{8}$/ {
 	s/.*/Black wins/p
 }
 /Black wins/! {
 	s/.*/White wins/p
 }
-q
+b line_write_manual
 
+:line_write_manual
+s/.*/Please input the file name of the chess manual to save. Input nothing if do not want to save./p
+n
+s/[ \t]//g
+/^$/q
+x
+s/^[^a-z\n]*([a-z]*).*/\1/
+s/([a-z])([a-z])/\1 \2/g
+s/([a-z])([a-z])/\1 \2/g
+s/a/0/g
+s/b/1/g
+s/c/2/g
+s/d/3/g
+s/e/4/g
+s/f/5/g
+s/g/6/g
+s/h/7/g
+s/i/8/g
+s/j/9/g
+s/k/10/g
+s/l/11/g
+s/m/12/g
+s/n/13/g
+s/o/14/g
+s/p/15/g
+s/q/16/g
+s/r/17/g
+s/s/18/g
+G
+#Convert the chess menual to shell script
+:line50
+s/^([^\n]*[0-9]) ([0-9]+ [0-9]+)\n((.*\n)?)([^\n]+)$/\1\necho \2 >>\5\n\3\5/
+t line50
+/^([0-9 ]+)(\n((.*\n)?))([^\n]+)/s//echo \1 >>\5\2\5/
+s/(^|.*)\n([^\n]+)$/>\2\n\1/
+e
+q

@@ -10,4 +10,5 @@ We can input two numbers for the coordinate in a line to put a stone on the posi
 # End the game
 We can input `score` to lead the game to counting.  
 In counting, we can input two numbers for the coordinate to clear the dead stones.  
-After we cleared all the , we can input `end` to count the result. We use Chinese rules(3+3/4) bcause it is simplier than the others.
+After we cleared all the , we can input `end` to count the result. We use Chinese rules(3+3/4) bcause it is simplier than the others.  
+At last, we can input a file name to save the chess manual to it.
