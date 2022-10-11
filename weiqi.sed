@@ -411,13 +411,17 @@ s/;//g
 s/[0-9]{2}/&   /g
 s/([0-9])([+ox])/ \1   \2/g
 
-s/^([^\n]+)\n(.*)/\n                         1 1 1 1 1 1 1 1 1\n     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8\n\n\2\n\nInput the coordinate(\1)/p
+#While playing
+/^[BW]/ {
+	s/^([^\n]+)\n(.*)/\n                         1 1 1 1 1 1 1 1 1\n     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8\n\n\2\n\nInput the coordinate(\1)/p
+	d
+}
+s/^([^\n]+)\n(.*)/\n                         1 1 1 1 1 1 1 1 1\n     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8\n\n\2\n/p
 g
-#hold space: line 1 = S
+#hold space: line 1 = S (while scoring)
 /^S/ {
 	b score_lineA
 }
-d
 
 
 :score
@@ -495,8 +499,8 @@ s/^[^\n]*\n//
 }
 :line37
 y/P/0/
+/^S/!s/^/S/
 h
-s/^/S\n/
 b print
 
 
