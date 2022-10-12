@@ -11,4 +11,4 @@ We can input two numbers for the coordinate in a line to put a stone on the posi
 We can input `score` to lead the game to counting.  
 In counting, we can input two numbers for the coordinate to clear the dead stones.  
 After we cleared all the , we can input `end` to count the result. We use Chinese rules(3+3/4) because it is more simple than the others.  
-At last, we can input a file name to save the chess manual to it.
+At last, we can input a file name to save the chess manual to it. And, if the suffix of the file name is `sgf`, the program will save the chess manual in `sgf` format.

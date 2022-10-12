@@ -142,167 +142,146 @@ s/A0/P/
 }
 
 :line_white
-#White with qi
-/0P|P0|0[0-9A-Z\n]{19}P|P[0-9A-Z\n]{19}0/ {
-	#H means that it has qi
-	s/^/H /
-	b line_white_right
-}
 s/2P/HP/
 s/P2/PH/
 s/2([0-9A-Z\n]{19}P)/H\1/
 s/(P[0-9A-Z\n]{19})2/\1H/
 :line5
-#White with qi
-/0H|H0|0[0-9A-Z\n]{19}H|H[0-9A-Z\n]{19}0/ {
-	#H means that it has qi
-	s/^/H /
-	b line_white_right
-}
 s/2H/HH/g
 s/H2/HH/g
 s/2([0-9A-Z\n]{19}H)/H\1/g
 s/(H[0-9A-Z\n]{19})2/\1H/g
 t line5
+#White with qi
+/0[PH]|[PH]0|0[0-9A-Z\n]{19}[PH]|[PH][0-9A-Z\n]{19}0/ {
+	#H means that it has qi
+	s/^/H /
+}
 
 :line_white_right
 /P1/ {
 	s//PA/
 	:line6
-	/0A|A0|0[0-9A-Z\n]{19}A|A[0-9A-Z\n]{19}0/ {
-		s/^/A /
-		b line_white_left
-	}
 	s/A1/AA/g
 	s/1A/AA/g
 	s/1([0-9A-Z\n]{19}A)/A\1/g
 	s/(A[0-9A-Z\n]{19})1/\1A/g
 	t line6
+	/0A|A0|0[0-9A-Z\n]{19}A|A[0-9A-Z\n]{19}0/ {
+		s/^/A /
+	}
 }
 :line_white_left
 /1P/ {
 	s//BP/
 	:line7
-	/0B|B0|0[0-9A-Z\n]{19}B|B[0-9A-Z\n]{19}0/ {
-		s/^/B /
-		b line_white_up
-	}
 	s/B1/BB/g
 	s/1B/BB/g
 	s/1([0-9A-Z\n]{19}B)/B\1/g
 	s/(B[0-9A-Z\n]{19})1/\1B/g
 	t line7
+	/0B|B0|0[0-9A-Z\n]{19}B|B[0-9A-Z\n]{19}0/ {
+		s/^/B /
+	}
 }
 :line_white_up
 /1([0-9A-Z\n]{19}P)/ {
 	s//C\1/
 	:line8
-	/0C|C0|0[0-9A-Z\n]{19}C|C[0-9A-Z\n]{19}0/ {
-		s/^/C /
-		b line_white_down
-	}
 	s/C1/CC/g
 	s/1C/CC/g
 	s/1([0-9A-Z\n]{19}C)/C\1/g
 	s/(C[0-9A-Z\n]{19})1/\1C/g
 	t line8
+	/0C|C0|0[0-9A-Z\n]{19}C|C[0-9A-Z\n]{19}0/ {
+		s/^/C /
+	}
 }
 :line_white_down
 /(P[0-9A-Z\n]{19})1/ {
 	s//\1D/
 	:line9
-	/0D|D0|0[0-9A-Z\n]{19}D|D[0-9A-Z\n]{19}0/ {
-		s/^/D /
-		b line_white_down
-	}
 	s/D1/DD/g
 	s/1D/DD/g
 	s/1([0-9A-Z\n]{19}D)/D\1/g
 	s/(D[0-9A-Z\n]{19})1/\1D/g
 	t line9
+	/0D|D0|0[0-9A-Z\n]{19}D|D[0-9A-Z\n]{19}0/ {
+		s/^/D /
+	}
 }
 
 b judge_dead_stons
 
 :line_black
-#Black with qi
-/0P|P0|0[0-9A-Z\n]{19}P|P[0-9A-Z\n]{19}0/ {
-	#H means that it has qi
-	s/^/H /
-	b line_black_right
-}
 s/1P/HP/
 s/P1/PH/
 s/1([0-9A-Z\n]{19}P)/H\1/
 s/(P[0-9A-Z\n]{19})1/\1H/
 :line5X
-#Black with qi
-/0H|H0|0[0-9A-Z\n]{19}H|H[0-9A-Z\n]{19}0/ {
-	#H means that it has qi
-	s/^/H /
-	b line_black_right
-}
 s/1H/HH/g
 s/H1/HH/g
 s/1([0-9A-Z\n]{19}H)/H\1/g
 s/(H[0-9A-Z\n]{19})1/\1H/g
 t line5X
+#Black with qi
+/0[PH]|[PH]0|0[0-9A-Z\n]{19}[PH]|[PH][0-9A-Z\n]{19}0/ {
+	#H means that it has qi
+	s/^/H /
+	b line_black_right
+}
 
 :line_black_right
 /P2/ {
 	s//PA/
 	:line10
-	/0A|A0|0[0-9A-Z\n]{19}A|A[0-9A-Z\n]{19}0/ {
-		s/^/A /
-		b line_black_left
-	}
 	s/A2/AA/g
 	s/2A/AA/g
 	s/2([0-9A-Z\n]{19}A)/A\1/g
 	s/(A[0-9A-Z\n]{19})2/\1A/g
 	t line10
+	/0A|A0|0[0-9A-Z\n]{19}A|A[0-9A-Z\n]{19}0/ {
+		s/^/A /
+	}
 }
 :line_black_left
 /2P/ {
 	s//BP/
 	:line11
-	/0B|B0|0[0-9A-Z\n]{19}B|B[0-9A-Z\n]{19}0/ {
-		s/^/B /
-		b line_black_up
-	}
 	s/B2/BB/g
 	s/2B/BB/g
 	s/2([0-9A-Z\n]{19}B)/B\1/g
 	s/(B[0-9A-Z\n]{19})2/\1B/g
 	t line11
+	/0B|B0|0[0-9A-Z\n]{19}B|B[0-9A-Z\n]{19}0/ {
+		s/^/B /
+	}
 }
 :line_black_up
 /2([0-9A-Z\n]{19}P)/ {
 	s//C\1/
 	:line12
-	/0C|C0|0[0-9A-Z\n]{19}C|C[0-9A-Z\n]{19}0/ {
-		s/^/C /
-		b line_black_down
-	}
 	s/C2/CC/g
 	s/2C/CC/g
 	s/2([0-9A-Z\n]{19}C)/C\1/g
 	s/(C[0-9A-Z\n]{19})2/\1C/g
 	t line12
+	/0C|C0|0[0-9A-Z\n]{19}C|C[0-9A-Z\n]{19}0/ {
+		s/^/C /
+	}
 }
 :line_black_down
 /(P[0-9A-Z\n]{19})2/ {
 	s//\1D/
 	:line13
-	/0D|D0|0[0-9A-Z\n]{19}D|D[0-9A-Z\n]{19}0/ {
-		s/^/D /
-		b line_black_down
-	}
 	s/D2/DD/g
 	s/2D/DD/g
 	s/2([0-9A-Z\n]{19}D)/D\1/g
 	s/(D[0-9A-Z\n]{19})2/\1D/g
 	t line13
+	/0D|D0|0[0-9A-Z\n]{19}D|D[0-9A-Z\n]{19}0/ {
+		s/^/D /
+	}
 }
 
 b judge_dead_stons
@@ -540,6 +519,9 @@ s/21//g
 t line40
 /^$/ {
 	s/.*/Black and White have the same count\nWhite wins/p
+	x
+	s/$/\nBlack white/
+	x
 	b line_write_manual
 }
 
@@ -587,6 +569,9 @@ n
 /^[ \t]*#/b input_manual_name
 s/[ \t]//g
 /^$/q
+/\.sgf$/ {
+	b write_sgf
+}
 x
 s/^[^a-z\n]*([a-z]*).*/\1/
 s/([a-z])([a-z])/\1 \2/g
@@ -608,6 +593,64 @@ s/^([^\n]*[0-9]) ([0-9]+ [0-9]+)\n((.*\n)?)([^\n]+)$/\1\necho \2 >>\5\n\3\5/
 t line50
 /^([0-9 ]+)(\n((.*\n)?))([^\n]+)/s//echo \1 >>\5\2\5/
 s/(^|.*\n)([^\n]+)$/>\2\n\1cat <<EOF\n\2 saved\nEOF/
+e
+p
+q
+
+:write_sgf
+x
+H
+x
+s/^([^\n]*\n)((.*\n)?)([BW])[^1]*(1*)$/\1\4\5/
+x
+
+s/^[^a-z\n]*([a-z]*).*/\1/
+s/^[a-z][a-z]/;B[&]/
+:line51
+s/(B\[..\])([a-z][a-z])/\1;W[\2]/
+s/(W\[..\])([a-z][a-z])/\1;B[\2]/
+t line51
+H
+s/.*/date +%Y-%m-%d/
+e 
+s/\n//g
+s/.*/;EV[Match]DT[&]PB[Tom]PW[Jerry]KM[7.5]SZ[19]RE[]/
+G
+
+x
+s/^[^\n]*\n([^\n]*)\n.*/\1/
+/^W/ {
+	s/$/1111111/
+}
+/^B/ {
+	s/B(.*)/Bx\1x11111111/
+	:line60
+	s/1x1/x/
+	t line60
+	/^Bxx1(1*)$/s//W\1/
+	/^Bx(1*)x$/s//B\1/
+}
+:line61
+s/([WB])1{10}/\11;/
+s/;1{10}/1;/g
+t line61
+s/[^0-9]$/&0/
+:line62
+s/;;/;0;/g
+t line62
+s/1{9}/9/g
+s/1{8}/8/g
+s/1{7}/7/g
+s/1{6}/6/g
+s/1{5}/5/g
+s/1{4}/4/g
+s/1{3}/3/g
+s/1{2}/2/g
+s/;//g
+s/(.)(.*)/\1+\2.5/
+x
+G
+s/(.*)\[\]\n(.*)\n(.*)\n(.*)\n(.*)/echo "(\1[\5]\4)" >\2\ncat <<EOF\n\2 saved\nEOF/
 e
 p
 q
