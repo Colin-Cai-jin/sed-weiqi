@@ -2,8 +2,11 @@
 #Writen by Colin Cai(Colin_Cai_Jin@163.com)
 
 #input 'start' to start a new game
-#input two numbers fot the coordinate to pit a stone
+#input two numbers for the coordinate to put a stone
 #input 'score' to decide win/lose
+#input two numbers for the coordinate to clear dead stones
+#input 'end' to finish the game
+#input a file name to save the chess manual
 
 #                         1 1 1 1 1 1 1 1 1
 #     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8
@@ -98,9 +101,9 @@ s/X3/d/g
 s/X2/c/g
 s/X1/b/g
 s/X0/a/g
-:line1
+:line_split_num_semicolon
 s/([0-9])([0-9])/\1;\2/
-t line1
+t line_split_num_semicolon
 s/([0-9])( |$)/\11\2/g
 s/0//g
 s/9/45/g
@@ -111,9 +114,9 @@ s/5/32/g
 s/4/22/g
 s/3/21/g
 s/2/11/g
-:line2
+:line_to_unary_code
 s/1;/;1111111111/g
-t line2
+t line_to_unary_code
 s/;//g
 
 G
@@ -122,12 +125,12 @@ s/^([^\n]+)\n([^\n]+\n)([^\n]+)/\2\3\1/
 
 #Judge whether there is a stone on the coordinate
 s/^(1+) (1+\n[^\n]*\n)/x\1 y\2A/
-:line3
+:line_set_y
 s/y11(.*)A([^\n]*\n)/1y1\1\2A/
-t line3
-:line4
+t line_set_y
+:line_set_x
 s/x11(.*)A(.)/1x1\1\2A/
-t line4
+t line_set_x
 /A[^0]/ {
 	s/.*/There is a stone. Please re-input/p
 	d
@@ -137,104 +140,54 @@ t line4
 s/^([^x]*)x([^y]*)y([^\n]*\n[^\n]*)\n/\1\2\3 \n/
 s/A0/P/
 #Black
-/^[^\n]*\n1/ {
-	s/^/12\n/	
-}
+/^[^\n]*\n1/s/^/12\n/
 /^12/!s/^/21\n/
 
-:line_white
+:line_self
 s/^(.)(.*)\1P/\1\2HP/
 s/^(.)(.*P)\1/\1\2H/
 s/^(.)(.*)\1([0-9A-Z\n]{19}P)/\1\2H\3/
 s/^(.)(.*P[0-9A-Z\n]{19})\1/\1\2H/
-:line5
+:line_set_self_connected
 s/^(.)(.*)\1H/\1\2HH/
 s/^(.)(.*)H\1/\1\2HH/
 s/^(.)(.*)\1([0-9A-Z\n]{19}H)/\1\2H\3/
 s/^(.)(.*H[0-9A-Z\n]{19})\1/\1\2H/
-t line5
+t line_set_self_connected
 #White with qi
 /0[PH]|[PH]0|0[0-9A-Z\n]{19}[PH]|[PH][0-9A-Z\n]{19}0/ {
 	#H means that it has qi
-	s/^/H /
+	s/^/H/
 }
 
-:line_white_right
-/^([A-Z ]*)([12])([12])(.*P)\3/ {
-	s//\1\2\3\4A/
-	:line6
-	s/^([A-Z ]*)([12])([12])(.*)\3A/\1\2\3\4AA/
-	s/^([A-Z ]*)([12])([12])(.*)A\3/\1\2\3\4AA/
-	s/^([A-Z ]*)([12])([12])(.*)\3([0-9A-Z\n]{19}A)/\1\2\3\4A\5/
-	s/^([A-Z ]*)([12])([12])(.*A[0-9A-Z\n]{19})\3/\1\2\3\4A/
-	t line6
-	/0A|A0|0[0-9A-Z\n]{19}A|A[0-9A-Z\n]{19}0/ {
-		s/^/A /
-	}
+s/^([^\n]*).(.)\n/ABCD\1\2\n/
+:line_set_self_neighbour
+/^A/s/^([A-Z ]*)([12])(.*P)\2/\1\2\3A/
+/^B/s/^([A-Z ]*)([12])(.*)\2P/\1\2\3BP/
+/^C/s/^([A-Z ]*)([12])(.*)\2([0-9A-Z\n]{19}P)/\1\2\3C\4/
+/^D/s/^([A-Z ]*)([12])(.*P[0-9A-Z\n]{19})\2/\1\2\3D/
+:line_set_neighbour
+s/^(.)([A-Z ]*)([12])(.*)\3\1/\1\2\3\4\1\1/
+s/^(.)([A-Z ]*)([12])(.*)\1\3/\1\2\3\4\1\1/
+s/^(.)([A-Z ]*)([12])(.*)\3([0-9A-Z\n]{19}\1)/\1\2\3\4\1\5/
+s/^(.)([A-Z ]*)([12])(.*\1[0-9A-Z\n]{19})\3/\1\2\3\4\1/
+t line_set_neighbour
+/^(.).*(0\1|\10|0[0-9A-Z\n]{19}\1|\1[0-9A-Z\n]{19}0)/ {
+	s/^(.)(([BC]*D)?)/\1\2\1/
 }
-:line_white_left
-/^([A-Z ]*)([12])([12])(.*)\3P/ {
-	s//\1\2\3\4BP/
-	:line7
-	s/^([A-Z ]*)([12])([12])(.*)\3B/\1\2\3\4BB/
-	s/^([A-Z ]*)([12])([12])(.*)B\3/\1\2\3\4BB/
-	s/^([A-Z ]*)([12])([12])(.*)\3([0-9A-Z\n]{19}B)/\1\2\3\4B\5/
-	s/^([A-Z ]*)([12])([12])(.*B[0-9A-Z\n]{19})\3/\1\2\3\4B/
-	t line7
-	/0B|B0|0[0-9A-Z\n]{19}B|B[0-9A-Z\n]{19}0/ {
-		s/^/B /
-	}
+/^[A-C]([B-D])/ {
+	s//\1/
+	t line_set_self_neighbour
 }
-:line_white_up
-/^([A-Z ]*)([12])([12])(.*)\3([0-9A-Z\n]{19}P)/ {
-	s//\1\2\3\4C\5/
-	:line8
-	s/^([A-Z ]*)([12])([12])(.*)\3C/\1\2\3\4CC/
-	s/^([A-Z ]*)([12])([12])(.*)C\3/\1\2\3\4CC/
-	s/^([A-Z ]*)([12])([12])(.*)\3([0-9A-Z\n]{19}C)/\1\2\3\4C\5/
-	s/^([A-Z ]*)([12])([12])(.*C[0-9A-Z\n]{19})\3/\1\2\3\4C/
-	t line8
-	/0C|C0|0[0-9A-Z\n]{19}C|C[0-9A-Z\n]{19}0/ {
-		s/^/C /
-	}
-}
-:line_white_down
-/^([A-Z ]*)([12])([12])(.*P[0-9A-Z\n]{19})\3/ {
-	s//\1\2\3\4D/
-	:line9
-	s/^([A-Z ]*)([12])([12])(.*)\3D/\1\2\3\4DD/
-	s/^([A-Z ]*)([12])([12])(.*)D\3/\1\2\3\4DD/
-	s/^([A-Z ]*)([12])([12])(.*)\3([0-9A-Z\n]{19}D)/\1\2\3\4D\5/
-	s/^([A-Z ]*)([12])([12])(.*D[0-9A-Z\n]{19})\3/\1\2\3\4D/
-	t line9
-	/0D|D0|0[0-9A-Z\n]{19}D|D[0-9A-Z\n]{19}0/ {
-		s/^/D /
-	}
-}
-s/^([^\n]*)..\n/\1/
+s/^.([^\n]*)(.)\n/\2\1/
 b judge_dead_stons
 
 :judge_dead_stons
-/^([^A\n]*)A/ {
-	s//\1/
-	/^[^\n]*\n1/y/A/2/
-	/^[^\n]*\n2/y/A/1/
-}
-/^([^B\n]*)B/ {
-	s//\1/
-	/^[^\n]*\n1/y/B/2/
-	/^[^\n]*\n2/y/B/1/
-}
-/^([^C\n]*)C/ {
-	s//\1/
-	/^[^\n]*\n1/y/C/2/
-	/^[^\n]*\n2/y/C/1/
-}
-/^([^D\n]*)D/ {
-	s//\1/
-	/^[^\n]*\n1/y/D/2/
-	/^[^\n]*\n2/y/D/1/
-}
+s/^(.)([A-D])(.*)\2/\1\2\3\1/
+t judge_dead_stons
+s/^(.)([A-D])/\1/
+t judge_dead_stons
+s/.//
 
 #Kofights
 /^ *(1+) +(1+) *\n[12] +\1 +\2[a-z ]*\n[^ABCD]*[ABCD][^ABCD]*$/ {
@@ -273,15 +226,15 @@ s/^[^\n]*\n(.)[^a-z\n]*([a-z]*) *\n/\1 \2\n/
 s/(.)(.*)[A-D]/\1 1 1\2A0/
 /^1/ {
 	s/./2/
-	t line14
+	t line_set_only_one_dead_stone_x
 }
 s/./1/
-:line14
+:line_set_only_one_dead_stone_x
 s/^(. )(1+ [^\n]+\n[^A]*)([0-9])A/\11\2A\3/
-t line14
-:line15
+t line_set_only_one_dead_stone_x
+:line_set_only_one_dead_stone_y
 s/^(. 1+ )([^\n]*\n(.*\n)?)([0-9]+\n)A/\11\2A\4/
-t line15
+t line_set_only_one_dead_stone_y
 s/A//
 h
 b print
@@ -297,13 +250,13 @@ s/2/x /g
 
 s/^[^\n]+\n/&0/
 s/\n([+ox])/\n1\1/
-:lineX
+:line_set_lineno_unary
 s/(\n)(1+)([^\n]+\n)([^1])/\1\2\3\21\4/
-t lineX
+t line_set_lineno_unary
 s/1+/;&/g
-:lineY
+:line_unary_to_decimal
 s/;1{10}/1;/g
-t lineY
+t line_unary_to_decimal
 s/1{9}/9/g
 s/1{8}/8/g
 s/1{7}/7/g
@@ -326,7 +279,7 @@ s/^([^\n]+)\n(.*)/\n                         1 1 1 1 1 1 1 1 1\n     0 1 2 3 4 5
 g
 #hold space: line 1 = S (while scoring)
 /^S/ {
-	b score_lineA
+	b score_input
 }
 
 :score
@@ -334,10 +287,9 @@ g
 /[0-9]/!q
 #hold space: line 1 => S
 x
-#s/^[^\n]*\n/S\n/
 s/^[^a-z\n]*([a-z]*) */\1 /
 x
-:score_lineA
+:score_input
 s/.*/Please input "end" to score and end the game, or input two numbers for the coordinate of the stone to clear/p
 :score_cmd
 n
@@ -349,11 +301,11 @@ n
 
 #convert other charactors to space
 s/[^0-9]+/ /g
-/^ *([0-9]+) +([0-9]+) *$/!b score_lineA
+/^ *([0-9]+) +([0-9]+) *$/!b score_input
 s//\1 \2/
-:line31
+:line_score_split_num_semicolon
 s/([0-9])([0-9])/\1;\2/
-t line31
+t line_score_split_num_semicolon
 s/([0-9])( |$)/\11\2/g
 s/0//g
 s/9/45/g
@@ -364,45 +316,33 @@ s/5/32/g
 s/4/22/g
 s/3/21/g
 s/2/11/g
-:line32
+:line_score_to_unary
 s/1;/;1111111111/g
-t line32
+t line_score_to_unary
 s/;//g
 
 G
 
 s/^(1+) (1+\n[^\n]*\n)/x\1 y\2A/
-:line33
+:line_score_move_y
 s/y11(.*)A([^\n]*\n)/1y1\1\2A/
-t line33
-:line34
+t line_score_move_y
+:line_score_move_x
 s/x11(.*)A(.)/1x1\1\2A/
-t line34
+t line_score_move_x
 /A0/ {
-	b score_lineA
+	b score_input
 }
 s/^[^\n]*\n//
-/A1/ {
-	s//P/
-	:line35
-	s/P[01]/PP/g
-	s/[01]P/PP/g
-	s/[01]([0-9A-Z\n]{19}P)/P\1/g
-	s/(P[0-9A-Z\n]{19})[01]/\1P/g
-	t line35
-	b line37
-}
-/A2/ {
-	s//P/
-	:line36
-	s/P[02]/PP/g
-	s/[02]P/PP/g
-	s/[02]([0-9A-Z\n]{19}P)/P\1/g
-	s/(P[0-9A-Z\n]{19})[02]/\1P/g
-	t line36
-	b line37
-}
-:line37
+
+s/^(.*)A(.)/\2\1P/
+:line_score_set_conneted
+s/^(.)(.*)P(0|\1)/\1\2PP/
+s/^(.)(.*)(0|\1)P/\1\2PP/
+s/^(.)(.*)(0|\1)([0-9A-Z\n]{19}P)/\1\2P\4/
+s/^(.)(.*)(P[0-9A-Z\n]{19})(0|\1)/\1\2\3P/
+t line_score_set_conneted
+s/.//
 y/P/0/
 /^S/!s/^/S/
 h
@@ -413,36 +353,34 @@ b print
 g
 s/^[^\n]*/S/
 #Check the ascription of each blank 
-:line38
-/0/ {
-	s//P/
-	:line39
-	s/P0/PP/g
-	s/0P/PP/g
-	s/0([0-9A-Z\n]{19}P)/P\1/g
-	s/(P[0-9A-Z\n]{19})0/\1P/g
-	t line39
-	/P1|1P|1[0-9A-Z\n]{19}P|P[0-9A-Z\n]{19}1/ {
-		s/^/1/
-	}
-	/P2|2P|2[0-9A-Z\n]{19}P|P[0-9A-Z\n]{19}2/ {
-		s/^/2/
-	}
-	/^(21)?S/y/P/3/
-	/^1S/y/P/1/
-	/^2S/y/P/2/
-	s/^[0-9]+//
-}
+:line_set_ascription
 /0/! b count
-b line38
+s//P/
+:line_count_set_conneted
+s/P0/PP/g
+s/0P/PP/g
+s/0([0-9A-Z\n]{19}P)/P\1/g
+s/(P[0-9A-Z\n]{19})0/\1P/g
+t line_count_set_conneted
+/P1|1P|1[0-9A-Z\n]{19}P|P[0-9A-Z\n]{19}1/ {
+	s/^/1/
+}
+/P2|2P|2[0-9A-Z\n]{19}P|P[0-9A-Z\n]{19}2/ {
+	s/^/2/
+}
+/^(21)?S/y/P/3/
+/^1S/y/P/1/
+/^2S/y/P/2/
+s/^[0-9]+//
+b line_set_ascription
 
 #Count two sides' domain
 :count
 s/[^12]//g
-:line40
+:line_clean_pair
 s/12//g
 s/21//g
-t line40
+t line_clean_pair
 /^$/ {
 	s/.*/Black and White have the same count\nWhite wins/p
 	x
@@ -459,10 +397,10 @@ t line40
 	y/2/1/
 }
 H
-:line41
+:line_count_to_decimal
 s/ 1{10}/ 1;/
 s/;1{10}/1;/g
-t line41
+t line_count_to_decimal
 s/1{9}/9/g
 s/1{8}/8/g
 s/1{7}/7/g
@@ -471,9 +409,9 @@ s/1{5}/5/g
 s/1{4}/4/g
 s/1{3}/3/g
 s/1{2}/2/g
-:line42
+:line_count_add_0
 s/;;/;0;/g
-t line42
+t line_count_add_0
 s/;$/0/
 s/;//g
 s/^([^ ]+) ([^ ]+) ([^ ]+)$/\1 has \3 stones more than \2/p
@@ -514,9 +452,9 @@ s/r/17/g
 s/s/18/g
 G
 #Convert the chess menual to shell script
-:line50
+:line_create_shell
 s/^([^\n]*[0-9]) ([0-9]+ [0-9]+)\n((.*\n)?)([^\n]+)$/\1\necho \2 >>\5\n\3\5/
-t line50
+t line_create_shell
 /^([0-9 ]+)(\n((.*\n)?))([^\n]+)/s//echo \1 >>\5\2\5/
 s/(^|.*\n)([^\n]+)$/>\2\n\1cat <<EOF\n\2 saved\nEOF/
 e
@@ -532,10 +470,10 @@ x
 
 s/^[^a-z\n]*([a-z]*).*/\1/
 s/^[a-z][a-z]/;B[&]/
-:line51
+:line_create_sgf
 s/(B\[..\])([a-z][a-z])/\1;W[\2]/
 s/(W\[..\])([a-z][a-z])/\1;B[\2]/
-t line51
+t line_create_sgf
 H
 s/.*/date +%Y-%m-%d/
 e 
@@ -550,20 +488,20 @@ s/^[^\n]*\n([^\n]*)\n.*/\1/
 }
 /^B/ {
 	s/B(.*)/Bx\1x11111111/
-	:line60
+	:line_compensation_points
 	s/1x1/x/
-	t line60
-	/^Bxx1(1*)$/s//W\1/
-	/^Bx(1*)x$/s//B\1/
+	t line_compensation_points
+	s/^Bxx1(1*)$/W\1/
+	s/^Bx(1*)x$/B\1/
 }
-:line61
+:line_count_result_to_decimal
 s/([WB])1{10}/\11;/
 s/;1{10}/1;/g
-t line61
+t line_count_result_to_decimal
 s/[^0-9]$/&0/
-:line62
+:line_count_result_add_0
 s/;;/;0;/g
-t line62
+t line_count_result_add_0
 s/1{9}/9/g
 s/1{8}/8/g
 s/1{7}/7/g
