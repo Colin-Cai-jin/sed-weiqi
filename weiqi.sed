@@ -442,15 +442,8 @@ s/^[^a-z\n]*([a-z]*).*/\1/
 s/([a-z])([a-z])/\1 \2/g
 s/([a-z])([a-z])/\1 \2/g
 y/abcdefghij/0123456789/
-s/k/10/g
-s/l/11/g
-s/m/12/g
-s/n/13/g
-s/o/14/g
-s/p/15/g
-s/q/16/g
-s/r/17/g
-s/s/18/g
+s/[k-s]/1&/g
+y/klmnopqrs/012345678/
 G
 #Convert the chess menual to shell script
 :line_create_shell
